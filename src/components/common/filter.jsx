@@ -3,16 +3,16 @@ import PropTypes from "prop-types";
 
 const Filter = (props) => {
   const {
-    items: allItems,
+    items,
     clearFilterLabel,
-    currentFilter,
-    onFilterChange,
     textProperty,
     valueProperty,
+    onItemSelect,
+    selectedItem,
   } = props;
 
   //Build local array of items
-  let items = [...allItems];
+  //let items = [...allItems];
 
   //Add the clear filter button to top
 
@@ -26,15 +26,30 @@ const Filter = (props) => {
       </button>
       {items.map((item) => (
         <button
-          className="list-group-item list-group-item-action"
+          className={
+            item === selectedItem
+              ? "list-group-item list-group-item-action active"
+              : "list-group-item list-group-item-action"
+          }
           style={{ cursor: "pointer" }}
-          key={[valueProperty]}
+          key={item[valueProperty]}
+          onClick={() => onItemSelect(item)}
         >
           {item[textProperty]}
         </button>
       ))}
     </ul>
   );
+};
+
+Filter.defaultProps = {
+  textProperty: "name",
+  valueProperty: "_id",
+};
+
+Filter.propTypes = {
+  textProperty: PropTypes.string,
+  valueProperty: PropTypes.string,
 };
 
 {
@@ -53,8 +68,5 @@ const Filter = (props) => {
 </ul>
 </nav> */
 }
-
-// Filter.propTypes = {
-//   itmitems, ber.isFilterallItem, iredFilter };
 
 export default Filter;

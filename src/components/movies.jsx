@@ -13,6 +13,7 @@ class Movies extends Component {
     tableCols: ["Title", "Genre", "Stock", "Rate"],
     pageSize: 4,
     currentPage: 1,
+    selectedGenre: null,
   };
 
   componentDidMount() {
@@ -59,7 +60,7 @@ class Movies extends Component {
   };
 
   handleGenreSelect = (genre) => {
-    console.log("Genre Selected: ", genre);
+    this.setState({ selectedGenre: genre });
   };
 
   render() {
@@ -77,9 +78,8 @@ class Movies extends Component {
             <Filter
               clearFilterLabel="All Genres"
               items={this.state.genres}
-              textProperty="name"
-              valueProperty="_id"
               onItemSelect={this.handleGenreSelect}
+              selectedItem={this.state.selectedGenre}
             />
           </div>
           <div className="col">
