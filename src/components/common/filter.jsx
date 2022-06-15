@@ -7,6 +7,8 @@ const Filter = (props) => {
     clearFilterLabel,
     currentFilter,
     onFilterChange,
+    textProperty,
+    valueProperty,
   } = props;
 
   //Build local array of items
@@ -26,9 +28,9 @@ const Filter = (props) => {
         <button
           className="list-group-item list-group-item-action"
           style={{ cursor: "pointer" }}
-          key={items.indexOf(item)}
+          key={[valueProperty]}
         >
-          {item.name}
+          {item[textProperty]}
         </button>
       ))}
     </ul>
