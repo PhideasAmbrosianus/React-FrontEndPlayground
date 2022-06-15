@@ -1,16 +1,15 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
-import Like from "./common/like";
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import Filter from "./common/filter";
 import { getGenres } from "../services/fakeGenreService";
+import MoviesTable from "./moviesTable";
 
 class Movies extends Component {
   state = {
     movies: [],
     genres: [],
-    tableCols: ["Title", "Genre", "Stock", "Rate"],
     pageSize: 4,
     currentPage: 1,
   };
@@ -83,62 +82,29 @@ class Movies extends Component {
     const movies = paginate(filtered, currentPage, pageSize);
 
     return (
-      <React.Fragment>
-        <div className="row">
-          <div className="col-3">
-            <Filter
-              items={this.state.genres}
-              onItemSelect={this.handleGenreSelect}
-              selectedItem={this.state.selectedGenre}
-            />
-          </div>
-          <div className="col">
-            <span>Showing {filtered.length} movies in the database.</span>
-            <table className="table">
-              <thead>
-                <tr>
-                  {this.state.tableCols.map((name) => (
-                    <th scope="col" key={name}>
-                      {name}
-                    </th>
-                  ))}
-                  <th scope="col" key="delete"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {movies.map((movie, index) => (
-                  <tr key={movie._id}>
-                    <td>{movie.title}</td>
-                    <td>{movie.genre.name}</td>
-                    <td>{movie.numberInStock}</td>
-                    <td>{movie.dailyRentalRate}</td>
-                    <td>
-                      <Like
-                        isLiked={movie.isLiked}
-                        onClick={() => this.handleLikeClick(movie)}
-                      />
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => this.handleDelete(movie)}
-                        className="btn btn-danger btn-sm"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <Pagination
-              itemsCount={filtered.length}
-              pageSize={pageSize}
-              currentPage={currentPage}
-              onPageChange={this.handlePageChange}
-            />
-          </div>
+      <div className="row">
+        <div className="col-3">
+          <Filter
+            items={this.state.genres}
+            onItemSelect={this.handleGenreSelect}
+            selectedItem={this.state.selectedGenre}
+          />
         </div>
-      </React.Fragment>
+        <div className="col">
+          <span>Showing {filtered.length} movies in the database.</span>
+          <MoviesTable
+            movies={movies}
+            onDelete={this.handleDelete}
+            onLikeClick={this.handleLikeClick}
+          />
+          <Pagination
+            itemsCount={filtered.length}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={this.handlePageChange}
+          />
+        </div>
+      </div>
     );
   }
 }

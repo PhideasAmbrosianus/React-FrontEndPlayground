@@ -35,21 +35,4 @@ Filter.propTypes = {
   valueProperty: PropTypes.string,
 };
 
-{
-  /* <nav aria-label="Page navigation example">
-<ul className="pagination">
-  {pages.map((page) => (
-    <li
-      key={page}
-      className={page === currentPage ? "page-item active" : "page-item"}
-    >
-      <button className="page-link" onClick={() => onPageChange(page)}>
-        {page}
-      </button>
-    </li>
-  ))}
-</ul>
-</nav> */
-}
-
 export default Filter;
