@@ -3,14 +3,21 @@ import { getMovies } from "../services/fakeMovieService";
 import Like from "./common/like";
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
+import Filter from "./common/filter";
+import { getGenres } from "../services/fakeGenreService";
 
 class Movies extends Component {
   state = {
-    movies: getMovies(),
+    movies: [],
+    genres: [],
     tableCols: ["Title", "Genre", "Stock", "Rate"],
     pageSize: 4,
     currentPage: 1,
   };
+
+  componentDidMount() {
+    this.setState({ movies: getMovies(), genres: getGenres() });
+  }
 
   debug() {
     console.log(this.state.movies);
@@ -61,49 +68,60 @@ class Movies extends Component {
 
     return (
       <React.Fragment>
-        <span>Showing {this.state.movies.length} movies in the database.</span>
-        <table className="table">
-          <thead>
-            <tr>
-              {this.state.tableCols.map((name) => (
-                <th scope="col" key={name}>
-                  {name}
-                </th>
-              ))}
-              <th scope="col" key="delete"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {movies.map((movie, index) => (
-              <tr key={movie._id}>
-                <td>{movie.title}</td>
-                <td>{movie.genre.name}</td>
-                <td>{movie.numberInStock}</td>
-                <td>{movie.dailyRentalRate}</td>
-                <td>
-                  <Like
-                    isLiked={movie.isLiked}
-                    onClick={() => this.handleLikeClick(movie)}
-                  />
-                </td>
-                <td>
-                  <button
-                    onClick={() => this.handleDelete(movie)}
-                    className="btn btn-danger btn-sm"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <Pagination
-          itemsCount={count}
-          pageSize={pageSize}
-          currentPage={currentPage}
-          onPageChange={this.handlePageChange}
-        />
+        <div className="container">
+          <div className="row">
+            <div className="col">
+              <Filter clearFilterLabel="All Genres" items={this.state.genres} />
+            </div>
+            <div className="col">
+              <span>
+                Showing {this.state.movies.length} movies in the database.
+              </span>
+              <table className="table">
+                <thead>
+                  <tr>
+                    {this.state.tableCols.map((name) => (
+                      <th scope="col" key={name}>
+                        {name}
+                      </th>
+                    ))}
+                    <th scope="col" key="delete"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {movies.map((movie, index) => (
+                    <tr key={movie._id}>
+                      <td>{movie.title}</td>
+                      <td>{movie.genre.name}</td>
+                      <td>{movie.numberInStock}</td>
+                      <td>{movie.dailyRentalRate}</td>
+                      <td>
+                        <Like
+                          isLiked={movie.isLiked}
+                          onClick={() => this.handleLikeClick(movie)}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => this.handleDelete(movie)}
+                          className="btn btn-danger btn-sm"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <Pagination
+                itemsCount={count}
+                pageSize={pageSize}
+                currentPage={currentPage}
+                onPageChange={this.handlePageChange}
+              />
+            </div>
+          </div>
+        </div>
       </React.Fragment>
     );
   }
