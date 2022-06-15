@@ -8,8 +8,6 @@ const Pagination = (props) => {
   if (pagesCount === 1) return null;
   const pages = _.range(1, pagesCount + 1); //Reminder range doesn't
 
-  console.log(pages);
-
   return (
     <nav aria-label="Page navigation example">
       <ul className="pagination">
