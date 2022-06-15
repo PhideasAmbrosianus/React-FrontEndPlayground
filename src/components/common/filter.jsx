@@ -2,23 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const Filter = (props) => {
-  const {
-    items,
-    clearFilterLabel,
-    textProperty,
-    valueProperty,
-    onItemSelect,
-    selectedItem,
-  } = props;
+  const { items, textProperty, valueProperty, onItemSelect, selectedItem } =
+    props;
 
   return (
     <ul className="list-group">
-      <button
-        className="list-group-item list-group-item-action"
-        style={{ cursor: "pointer" }}
-      >
-        {clearFilterLabel}
-      </button>
       {items.map((item) => (
         <button
           className={
