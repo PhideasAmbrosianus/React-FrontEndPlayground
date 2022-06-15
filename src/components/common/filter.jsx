@@ -11,11 +11,6 @@ const Filter = (props) => {
     selectedItem,
   } = props;
 
-  //Build local array of items
-  //let items = [...allItems];
-
-  //Add the clear filter button to top
-
   return (
     <ul className="list-group">
       <button
