@@ -1,16 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const Like = (props) => {
+const Like = ({ isLiked, onClick }) => {
   let classes = "fa fa-heart";
-  if (!props.isLiked) classes += "-o";
+  if (!isLiked) classes += "-o";
 
   return (
-    <i
-      className={classes}
-      style={{ cursor: "pointer" }}
-      onClick={props.onClick}
-    ></i>
+    <i className={classes} style={{ cursor: "pointer" }} onClick={onClick}></i>
   );
 };
 
