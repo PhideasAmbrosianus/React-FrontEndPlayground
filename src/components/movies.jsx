@@ -30,17 +30,6 @@ class Movies extends Component {
     return;
   }
 
-  //This was my first cut
-  // handleDelete(index) {
-  //   //console.log("click", index);
-  //   this.setState({
-  //     movies: [
-  //       ...this.state.movies.slice(0, index),
-  //       ...this.state.movies.slice(index + 1),
-  //     ],
-  //   });
-  // }
-
   //And a better way is to use filter with an arrow function - simpler code
   handleDelete = (movie) => {
     const movies = this.state.movies.filter((m) => m._id !== movie._id);
@@ -65,14 +54,7 @@ class Movies extends Component {
     this.setState({ selectedGenre: genre, currentPage: 1 });
   };
 
-  handleSort = (path) => {
-    const sortColumn = { ...this.state.sortColumn };
-    if (sortColumn.path === path)
-      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
-    else {
-      sortColumn.path = path;
-      sortColumn.order = "asc";
-    }
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
@@ -110,6 +92,7 @@ class Movies extends Component {
           <span>Showing {filtered.length} movies in the database.</span>
           <MoviesTable
             movies={movies}
+            sortColumn={sortColumn}
             onDelete={this.handleDelete}
             onLikeClick={this.handleLikeClick}
             onSort={this.handleSort}
