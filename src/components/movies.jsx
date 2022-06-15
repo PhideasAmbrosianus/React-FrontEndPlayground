@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
+import Like from "./common/like";
 
 class Movies extends Component {
   state = {
@@ -12,22 +13,7 @@ class Movies extends Component {
   }
 
   renderMoviesList() {
-    return this.state.movies.map((movie, index) => (
-      <tr key={movie._id}>
-        <td>{movie.title}</td>
-        <td>{movie.genre.name}</td>
-        <td>{movie.numberInStock}</td>
-        <td>{movie.dailyRentalRate}</td>
-        <td>
-          <button
-            onClick={() => this.handleDelete(movie)}
-            className="btn btn-danger btn-sm"
-          >
-            Delete
-          </button>
-        </td>
-      </tr>
-    ));
+    return;
   }
 
   //This was my first cut
@@ -44,6 +30,16 @@ class Movies extends Component {
   //And a better way is to use filter with an arrow function - simpler code
   handleDelete = (movie) => {
     const movies = this.state.movies.filter((m) => m._id !== movie._id);
+    this.setState({ movies });
+  };
+
+  handleLikeClick = (movie) => {
+    const movies = [...this.state.movies];
+    const index = movies.indexOf(movie);
+
+    movies[index] = { ...movies[index] };
+    movies[index].isLiked = !movies[index].isLiked;
+
     this.setState({ movies });
   };
 
@@ -66,7 +62,30 @@ class Movies extends Component {
               <th scope="col" key="delete"></th>
             </tr>
           </thead>
-          <tbody>{this.renderMoviesList()}</tbody>
+          <tbody>
+            {this.state.movies.map((movie, index) => (
+              <tr key={movie._id}>
+                <td>{movie.title}</td>
+                <td>{movie.genre.name}</td>
+                <td>{movie.numberInStock}</td>
+                <td>{movie.dailyRentalRate}</td>
+                <td>
+                  <Like
+                    isLiked={movie.isLiked}
+                    onClick={() => this.handleLikeClick(movie)}
+                  />
+                </td>
+                <td>
+                  <button
+                    onClick={() => this.handleDelete(movie)}
+                    className="btn btn-danger btn-sm"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </React.Fragment>
     );
