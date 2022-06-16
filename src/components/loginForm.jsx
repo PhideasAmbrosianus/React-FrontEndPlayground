@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Input from "./common/input";
+import Joi from "joi-browser";
 
 class LoginForm extends Component {
   state = {
@@ -7,28 +8,29 @@ class LoginForm extends Component {
     errors: {},
   };
 
+  schema = {
+    username: Joi.string().required().label("Username"),
+    password: Joi.string().required().label("Password"),
+  };
+
   validate = () => {
+    const options = { abortEarly: false };
+    const { error } = Joi.validate(this.state.account, this.schema, options);
+
+    if (!error) return null;
+
     const errors = {};
-    const { account } = this.state;
+    error.details.map((item) => (errors[item.path[0]] = item.message));
 
-    if (account.username.trim() === "")
-      errors.username = "Username is required.";
-
-    if (account.password.trim() === "")
-      errors.password = "Password is required.";
-
-    return Object.keys(errors).length === 0 ? null : errors;
+    return errors;
   };
 
   validateProperty = ({ name, value }) => {
-    if (name === "username") {
-      if (value.trim() === "") return "Username is required.";
-      // ... other rules possible
-    }
+    const obj = { [name]: value };
+    const schema = { [name]: this.schema[name] }; // Apply the schema value for this object defined in parent schema
+    const { error } = Joi.validate(obj, schema);
 
-    if (name === "password") {
-      if (value.trim() === "") return "Password is required.";
-    }
+    return error ? error.details[0].message : null;
   };
 
   handleSubmit = (e) => {
