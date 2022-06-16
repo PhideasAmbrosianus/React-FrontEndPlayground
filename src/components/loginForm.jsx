@@ -1,34 +1,38 @@
 import React, { Component } from "react";
 
 class LoginForm extends Component {
-  username = React.createRef(); //Creates a React reference we can apply to a DOM object
-
-  // componentDidMount() {
-  //   this.username.current.focus();
-  // }
+  state = {
+    account: { username: "", password: "" },
+  };
 
   handleSubmit = (e) => {
     e.preventDefault(); //Prevents default behaviour of this event
 
     // Call the server
-    // const username = document.getElementById('username').value; // <- This works normally, but don't do this in REACT. React is all about the virtual DOM not the actual DOM
-    //const username = this.username.current.value; // If you really need to access the DOM this is the method. There is a better way for Forms, learning this next.
-    // Minimize use of refs - third party DOM libs, focus control, or animations. Don't overuse them.
-    // current = reference to DOM object
-
     console.log("Submitted");
   };
 
+  handleChange = ({ currentTarget: input }) => {
+    const account = { ...this.state.account };
+    account[input.name] = input.value; //currentTarget = input field
+    this.setState({ account });
+  };
+
   render() {
+    const { account } = this.state;
+    const { handleChange, handleSubmit } = this;
+
     return (
       <div>
         <h1>Login</h1>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Username</label>
             <input
               autoFocus
-              ref={this.username}
+              value={account.username}
+              onChange={handleChange}
+              name="username"
               id="username"
               type="text"
               className="form-control"
@@ -36,7 +40,14 @@ class LoginForm extends Component {
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <input id="password" type="text" className="form-control" />
+            <input
+              value={account.password}
+              onChange={handleChange}
+              name="password"
+              id="password"
+              type="text"
+              className="form-control"
+            />
           </div>
           <button className="btn btn-primary">Login</button>
         </form>
