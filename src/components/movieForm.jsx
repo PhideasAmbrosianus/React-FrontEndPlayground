@@ -14,7 +14,6 @@ class MovieForm extends Form {
     },
     errors: {},
     genres: [],
-    id: null,
   };
 
   //on model init'd
@@ -25,6 +24,7 @@ class MovieForm extends Form {
 
   // Populate schema once model is loaded (this way we have the list of Genres valid for the list box)
   schema = {
+    _id: Joi.string(),
     title: Joi.string().required().label("Title"),
     genreId: Joi.string().required().label("Genre"),
     numberInStock: Joi.number()
@@ -37,80 +37,54 @@ class MovieForm extends Form {
 
   componentDidMount() {
     const genres = getGenres();
+    this.setState({ genres });
 
-    const { history } = this.props;
-    const { id } = this.props.match.params;
+    const movieId = this.props.match.params.id;
 
-    if (id === "new") return this.setState({ isNew: true, genres });
+    if (movieId === "new") return;
 
-    const movie = getMovie(id);
-    if (!movie) {
-      console.log("not found");
-      history.push("/not-found");
-      return;
-    }
+    const movie = getMovie(movieId);
+    if (!movie) return this.props.history.replace("/not-found");
 
-    //If we make it here, populate our form data from the details in the movie id
-    const data = {
+    this.setState({ data: this.mapToViewModel(movie) });
+  }
+
+  //Trim the data down to that which is required for this view
+  mapToViewModel(movie) {
+    return {
+      _id: movie._id,
       title: movie.title,
       genreId: movie.genre._id,
       numberInStock: movie.numberInStock,
       dailyRentalRate: movie.dailyRentalRate,
     };
-
-    this.setState({ genres, data, id });
   }
 
   doSubmit = () => {
     // Call the server - in this case we will be calling the fakeMovieService
     // Note that in the API both are just handled with SaveMovie - but in real world we'd be calling different API hooks for each
     // Two scenarios - we are either updating or we are creating
-    const { isNew, id, data: movie } = this.state;
+    const { data: movie } = this.state;
     const { history } = this.props;
 
-    console.log("Saving movie...", movie);
-
-    if (isNew) {
+    if (movie._id === "new") {
       //Call create
       saveMovie(movie);
-      history.push("/movies");
-      return;
+      return history.replace("/movies");
     }
 
     //Call update
-    movie._id = id;
     saveMovie(movie);
-    history.push("/movies");
-    return;
+    return history.push("/movies");
   };
 
   render() {
-    const nameTemp = "genreId"; //Extracting this shortly
-    const label = "Genre";
-    const { genres, data } = this.state;
-    const error = null;
-
     return (
       <div>
         <h1>Movie Form</h1>
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("title", "Title")}
-          <div className="form-group">
-            <label htmlFor={nameTemp}>{label}</label>
-            <select
-              onChange={this.handleChange}
-              className="custom-select"
-              name={nameTemp}
-              value={data.genreId}
-            >
-              {genres.map((genre) => (
-                <option key={genre._id} value={genre._id}>
-                  {genre.name}
-                </option>
-              ))}
-            </select>
-            {error && <div className="alert alert-danger">{error}</div>}
-          </div>
+          {this.renderSelect("genreId", "Genre", this.state.genres)}
           {this.renderInput("numberInStock", "Number in Stock")}
           {this.renderInput("dailyRentalRate", "Rate")}
           {this.renderButton("Save")}
@@ -119,19 +93,5 @@ class MovieForm extends Form {
     );
   }
 }
-
-// const MovieForm = ({ match, history }) => {
-//   return (
-//     <div>
-//       <h1>MovieID: {match.params.id} </h1>
-//       <button
-//         className="btn btn-primary"
-//         onClick={() => history.push("/movies")}
-//       >
-//         Save
-//       </button>
-//     </div>
-//   );
-// };
 
 export default MovieForm;
