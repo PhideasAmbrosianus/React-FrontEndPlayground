@@ -2,14 +2,19 @@ import React from "react";
 import Form from "./common/form";
 import Joi from "joi-browser";
 import { getGenres } from "../services/fakeGenreService";
-import { getMovie } from "../services/fakeMovieService";
+import { getMovie, saveMovie } from "../services/fakeMovieService";
 
 class MovieForm extends Form {
   state = {
-    data: { title: "", genre: "", numberInStock: "", rate: "" },
+    data: {
+      title: "",
+      genreId: "",
+      numberInStock: "",
+      dailyRentalRate: "",
+    },
     errors: {},
     genres: [],
-    isNew: false,
+    id: null,
   };
 
   //on model init'd
@@ -21,24 +26,24 @@ class MovieForm extends Form {
   // Populate schema once model is loaded (this way we have the list of Genres valid for the list box)
   schema = {
     title: Joi.string().required().label("Title"),
-    genre: Joi.string().required().label("Genre"),
+    genreId: Joi.string().required().label("Genre"),
     numberInStock: Joi.number()
       .required()
       .min(0)
       .max(100)
       .label("Number in Stock"),
-    rate: Joi.number().required().min(0).max(10).label("Rate"),
+    dailyRentalRate: Joi.number().required().min(0).max(10).label("Rate"),
   };
 
   componentDidMount() {
     const genres = getGenres();
 
-    const { match, history } = this.props;
+    const { history } = this.props;
+    const { id } = this.props.match.params;
 
-    if (match.params.id === "new")
-      return this.setState({ isNew: true, genres });
+    if (id === "new") return this.setState({ isNew: true, genres });
 
-    const movie = getMovie(match.params.id);
+    const movie = getMovie(id);
     if (!movie) {
       console.log("not found");
       history.push("/not-found");
@@ -48,23 +53,41 @@ class MovieForm extends Form {
     //If we make it here, populate our form data from the details in the movie id
     const data = {
       title: movie.title,
-      genre: movie.genre,
+      genreId: movie.genre._id,
       numberInStock: movie.numberInStock,
-      rate: movie.dailyRentalRate,
+      dailyRentalRate: movie.dailyRentalRate,
     };
 
-    this.setState({ genres, data });
+    this.setState({ genres, data, id });
   }
 
   doSubmit = () => {
     // Call the server - in this case we will be calling the fakeMovieService
-    console.log("Submitted");
+    // Note that in the API both are just handled with SaveMovie - but in real world we'd be calling different API hooks for each
+    // Two scenarios - we are either updating or we are creating
+    const { isNew, id, data: movie } = this.state;
+    const { history } = this.props;
+
+    console.log("Saving movie...", movie);
+
+    if (isNew) {
+      //Call create
+      saveMovie(movie);
+      history.push("/movies");
+      return;
+    }
+
+    //Call update
+    movie._id = id;
+    saveMovie(movie);
+    history.push("/movies");
+    return;
   };
 
   render() {
-    const nameTemp = "genre2"; //Extracting this shortly
+    const nameTemp = "genreId"; //Extracting this shortly
     const label = "Genre";
-    const { genres } = this.state;
+    const { genres, data } = this.state;
     const error = null;
 
     return (
@@ -74,7 +97,12 @@ class MovieForm extends Form {
           {this.renderInput("title", "Title")}
           <div className="form-group">
             <label htmlFor={nameTemp}>{label}</label>
-            <select className="custom-select" name={nameTemp}>
+            <select
+              onChange={this.handleChange}
+              className="custom-select"
+              name={nameTemp}
+              value={data.genreId}
+            >
               {genres.map((genre) => (
                 <option key={genre._id} value={genre._id}>
                   {genre.name}
@@ -84,7 +112,7 @@ class MovieForm extends Form {
             {error && <div className="alert alert-danger">{error}</div>}
           </div>
           {this.renderInput("numberInStock", "Number in Stock")}
-          {this.renderInput("rate", "Rate")}
+          {this.renderInput("dailyRentalRate", "Rate")}
           {this.renderButton("Save")}
         </form>
       </div>
