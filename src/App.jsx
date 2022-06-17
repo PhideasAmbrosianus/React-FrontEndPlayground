@@ -10,6 +10,7 @@ import Rentals from "./components/rentals";
 import MovieForm from "./components/movieForm";
 import LoginForm from "./components/loginForm";
 import RegisterForm from "./components/registerForm";
+import Logout from "./components/common/logout";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
@@ -35,6 +36,7 @@ class App extends Component {
           <Switch>
             <Route path="/register" component={RegisterForm} />
             <Route path="/login" component={LoginForm} />
+            <Route path="/logout" component={Logout} />
             <Route path="/movies/:id" component={MovieForm} />
             <Route path="/movies" component={Movies} />
             <Route path="/customers" component={Customers} />
