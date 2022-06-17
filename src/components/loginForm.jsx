@@ -19,7 +19,8 @@ class LoginForm extends Form {
       const { username, password } = this.state.data;
       const { data: jwt } = await login(username, password);
       localStorage.setItem("token", jwt);
-      this.props.history.push("/");
+      //this.props.history.push("/");
+      window.location = "/"; // Full reload of application
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         const errors = { ...this.state.errors };
