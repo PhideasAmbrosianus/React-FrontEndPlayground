@@ -28,7 +28,7 @@ class TableHeader extends Component {
   };
 
   render() {
-    const { columns, sortColumn } = this.props;
+    const { columns } = this.props;
 
     return (
       <thead>
