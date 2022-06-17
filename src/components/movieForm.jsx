@@ -2,7 +2,7 @@ import React from "react";
 import Form from "./common/form";
 import Joi from "joi-browser";
 import { getGenres } from "../services/genreService";
-import { getMovie, saveMovie } from "../services/fakeMovieService";
+import { getMovie, saveMovie } from "../services/movieService";
 
 class MovieForm extends Form {
   state = {
@@ -43,7 +43,7 @@ class MovieForm extends Form {
 
     if (movieId === "new") return;
 
-    const movie = getMovie(movieId);
+    const { data: movie } = await getMovie(movieId);
     if (!movie) return this.props.history.replace("/not-found");
 
     this.setState({ data: this.mapToViewModel(movie) });
@@ -60,21 +60,17 @@ class MovieForm extends Form {
     };
   }
 
-  doSubmit = () => {
+  doSubmit = async () => {
     // Call the server - in this case we will be calling the fakeMovieService
     // Note that in the API both are just handled with SaveMovie - but in real world we'd be calling different API hooks for each
     // Two scenarios - we are either updating or we are creating
     const { data: movie } = this.state;
     const { history } = this.props;
 
-    if (movie._id === "new") {
-      //Call create
-      saveMovie(movie);
-      return history.replace("/movies");
-    }
+    await saveMovie(movie);
+    const newMovie = !movie._id;
+    if (newMovie) return history.replace("/movies");
 
-    //Call update
-    saveMovie(movie);
     return history.push("/movies");
   };
 
