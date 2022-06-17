@@ -1,17 +1,20 @@
-import Raven from 'raven-js';
+//import Raven from 'raven-js';
 
 function init() {
-  Raven.config('https://max.the.cat', {
-    release: "1-0-0",
-    environment: "development"
-  }).install();
+  // Raven.config('https://max.the.cat', {
+  //   release: "1-0-0",
+  //   environment: "development"
+  // }).install();
 }
 
 function log(error) {
-  Raven.captureException(error);  //Setup sentry.io and connect Raven for this to work
+  // Raven.captureException(error);  //Setup sentry.io and connect Raven for this to work
+  console.error(error);
 }
 
-export default {
+const exportObj = {
   init,
   log
 }
+
+export default exportObj;

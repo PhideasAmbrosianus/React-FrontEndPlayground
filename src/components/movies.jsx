@@ -1,13 +1,15 @@
 import React, { Component } from "react";
-import { getMovies } from "../services/fakeMovieService";
-import Pagination from "./common/pagination";
-import { paginate } from "../utils/paginate";
-import Filter from "./common/filter";
-import Search from "./common/search";
-import { getGenres } from "../services/fakeGenreService";
-import MoviesTable from "./moviesTable";
 import _ from "lodash";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { paginate } from "../utils/paginate";
+import Pagination from "./common/pagination";
+import MoviesTable from "./moviesTable";
+import Filter from "./common/filter";
+import Search from "./common/search";
+import { getMovies, deleteMovie } from "../services/movieService";
+//import { getGenres } from "../services/fakeGenreService";
+import { getGenres } from "../services/genreService";
 
 class Movies extends Component {
   state = {
@@ -20,10 +22,13 @@ class Movies extends Component {
     selectedGenre: null,
   };
 
-  componentDidMount() {
-    const genres = [{ _id: "", name: "All Genres" }, ...getGenres()];
+  async componentDidMount() {
+    const { data } = await getGenres();
+    const genres = [{ _id: "", name: "All Genres" }, ...data];
 
-    this.setState({ movies: getMovies(), genres });
+    const { data: movies } = await getMovies();
+
+    this.setState({ genres, movies });
   }
 
   debug() {
@@ -35,9 +40,20 @@ class Movies extends Component {
   }
 
   //And a better way is to use filter with an arrow function - simpler code
-  handleDelete = (movie) => {
-    const movies = this.state.movies.filter((m) => m._id !== movie._id);
+  handleDelete = async (movie) => {
+    const originalMovies = this.state.movies;
+
+    const movies = originalMovies.filter((m) => m._id !== movie._id);
     this.setState({ movies });
+
+    try {
+      await deleteMovie(movie._id);
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404)
+        toast.error("This movie has already been deleted.");
+
+      this.setState({ movies: originalMovies });
+    }
   };
 
   handleLikeClick = (movie) => {
