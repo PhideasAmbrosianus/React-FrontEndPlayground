@@ -1,8 +1,9 @@
 import axios from 'axios';
 import logger from './logService';
+import auth from "./authService";
 
-//withCredentials: false,
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+//axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';  //Headers specific to post request only
+axios.defaults.headers.common['x-auth-token'] = auth.getJwt(); // <- Dangerous this forms part of a bi-directional dependency httpService requires auth and auth requires httpService
 
 axios.interceptors.response.use(null, error => {
   const expectedError = error.response && error.response.status >= 400 && error.response.status < 500;
