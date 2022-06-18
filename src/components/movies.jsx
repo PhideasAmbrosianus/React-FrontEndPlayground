@@ -142,6 +142,7 @@ class Movies extends Component {
           <Search value={searchFilter} onChange={this.handleSearchChange} />
           <span>Showing {totalCount} movies in the database.</span>
           <MoviesTable
+            user={user}
             movies={movies}
             sortColumn={sortColumn}
             onDelete={this.handleDelete}
