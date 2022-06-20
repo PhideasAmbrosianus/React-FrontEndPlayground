@@ -112,11 +112,8 @@ class Movies extends Component {
   };
 
   render() {
-    const { length: count } = this.state.movies;
     const { pageSize, currentPage, sortColumn, searchFilter } = this.state;
     const { user } = this.props;
-
-    if (count === 0) return <p>No Movies in Database!</p>;
 
     const { totalCount, data: movies } = this.getPagedData();
 
@@ -139,8 +136,8 @@ class Movies extends Component {
               New Movie
             </Link>
           )}
-          <Search value={searchFilter} onChange={this.handleSearchChange} />
           <span>Showing {totalCount} movies in the database.</span>
+          <Search value={searchFilter} onChange={this.handleSearchChange} />
           <MoviesTable
             user={user}
             movies={movies}
